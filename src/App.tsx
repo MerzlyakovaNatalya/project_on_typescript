@@ -5,6 +5,7 @@ import { Loader } from './components/Loader';
 import { Modal } from './components/Modal';
 import { Product } from './components/Product';
 import { useProducts } from './hooks/products';
+import { Layout } from './components/exercise';
 import { IProduct } from './models';
 
 
@@ -19,6 +20,7 @@ function App() {
   }
   return (
     <div className="container mx-auto max-w-2xl pt-5">
+      <Layout></Layout>
       {loading && <Loader/>}
       {error && <ErrorMessage error={error}/>}
       {product.map(product => <Product product={product} key={product.id}/>)}
