@@ -5,7 +5,7 @@ import { Loader } from './components/Loader';
 import { Modal } from './components/Modal';
 import { Product } from './components/Product';
 import { useProducts } from './hooks/products';
-import { Layout } from './components/exercise';
+import { Layout } from './components/Editor';
 
 
 function App() {
