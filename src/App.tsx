@@ -7,7 +7,6 @@ import { Product } from './components/Product';
 import { useProducts } from './hooks/products';
 import { Layout } from './components/Editor';
 
-
 function App() {
 
   const {product, addProduct, loading, error} = useProducts();

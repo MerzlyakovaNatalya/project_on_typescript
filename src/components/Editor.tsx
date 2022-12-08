@@ -18,7 +18,8 @@ interface PropsParams {
 }
 interface PropsValues {
   model: Model;
-  getChangeValue: (paramId: number, e: any) => void
+  getChangeValue: (paramId: number, e: any) => void;
+  value: string;
 }
 interface Props {
   params: Param[];
@@ -67,19 +68,25 @@ export const Layout: React.FC = () => {
 
 const ParamEditor: React.FC<Props> = ({ params, model }) => {
 
-  const getChangeValue = (paramId: number, e: any) => {
-    const newValue = model.paramValues.filter((item) => item.paramId === paramId);
-    model.paramValues.map((item) => {
+  const [value, setValue] = useState<ParamValue[]>([]);
 
-    }) 
-    console.log(paramId, e.target.value, newValue)
+  const getChangeValue = (paramId: number, e: any) => {
+    setValue(model.paramValues.map((item) => {
+      if(item.paramId !== paramId) return item;
+
+      return {
+        ...item,
+        value: e.target.value
+      }
+    }))
   };
+  console.log(value);
 
   return (
     <>
       <div style={{ display: "flex" }}>
         <Params params={params}/>
-        <Values model={model} getChangeValue={getChangeValue}/>
+        <Values model={model} getChangeValue={getChangeValue} value={value}/>
       </div>
     </>
   );
@@ -98,13 +105,14 @@ const Params: React.FC<PropsParams> = ({params}) => {
 
 const Values: React.FC<PropsValues>= (props) => {
 
-  const {model, getChangeValue} = props;
+  const {model, getChangeValue, value} = props;
 
   return <div style={{ display: "flex", flexDirection: "column" }}>
   {model.paramValues.map((i) => (
     <input
       key={i.paramId}
       type="text"
+      value={value}
       placeholder={i.value}
       onChange={(e) => getChangeValue(i.paramId, e)}
       style={{ border: "1px solid #cac7c7" }}
