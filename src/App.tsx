@@ -6,6 +6,7 @@ import { Modal } from './components/Modal';
 import { Product } from './components/Product';
 import { useProducts } from './hooks/products';
 import { Layout } from './components/Editor';
+import { IProduct } from './models'
 
 function App() {
 
@@ -18,7 +19,6 @@ function App() {
   }
   return (
     <div className="container mx-auto max-w-2xl pt-5">
-      <Layout></Layout>
       {loading && <Loader/>}
       {error && <ErrorMessage error={error}/>}
       {product.map(product => <Product product={product} key={product.id}/>)}
@@ -26,6 +26,7 @@ function App() {
         <CreteProduct onCreate={createHandler}/>
       </Modal>}
       <button className="fixed py-4 px-2 bottom-5 right-5 bg-red-700" onClick={() => setModal(true)}>+</button>
+      <Layout></Layout>
     </div>
   );
 }
