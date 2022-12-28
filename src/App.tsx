@@ -14,13 +14,13 @@ function App() {
  
   return (
     <div className="container mx-auto max-w-2xl pt-5">
-      <Layout></Layout>
       {loading && <Loader/>}
       {error && <ErrorMessage error={error}/>}
       {product.map(product => <Product product={product} key={product.id}/>)}
       {modal && <Modal title="Create new Product">
         <CreteProduct onCreate={() => setModal(false)}/>
       </Modal>}
+      <Layout></Layout>
     </div>
   );
 }

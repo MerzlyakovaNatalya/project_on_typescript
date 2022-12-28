@@ -1,9 +1,9 @@
-import { findByLabelText } from "@testing-library/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
+//interface
 interface Param {
   id: number;
-  name: string;
+  name: string | number;
   type: "string";
 }
 interface ParamValue {
@@ -17,81 +17,92 @@ interface PropsParams {
   params: Param[];
 }
 interface PropsValues {
-  model: Model;
   getChangeValue: (paramId: number, e: any) => void;
-  value: string;
+  values: ParamValue[];
 }
 interface Props {
   params: Param[];
-  model: Model;
-}
-interface State {
-  params: Param[];
-  paramsValues: ParamValue[];
+  getChangeValue: (paramId: number, e: any) => void;
+  values: ParamValue[];
 }
 
+// State
+const params: Param[] = [
+  {
+    id: 1,
+    name: "Назначение",
+    type: "string",
+  },
+  {
+    id: 2,
+    name: "Длина",
+    type: "string",
+  },
+];
+const paramValue: ParamValue[] = [
+  {
+    paramId: 1,
+    value: "повседневное",
+  },
+  {
+    paramId: 2,
+    value: "макси",
+  },
+];
 
-//  class ParamEditor extends React.Component<Props, State> {
-//      public getModel(): Model {
-//      }
-//  }
-
+//Компонент Layout создаёт State для всех значений параметров(value) и функцию getChangeValue, которая перезаписывает State
 export const Layout: React.FC = () => {
-  const params: Param[] = [
-    {
-      id: 1,
-      name: "Назначение",
-      type: "string",
-    },
-    {
-      id: 2,
-      name: "Длина",
-      type: "string",
-    },
-  ];
-  const paramValue: ParamValue[] = [
-    {
-      paramId: 1,
-      value: "повседневное",
-    },
-    {
-      paramId: 2,
-      value: "макси",
-    },
-  ];
+
   const model: Model = {
     paramValues: paramValue,
   };
 
-  return <ParamEditor params={params} model={model} />;
+  const [values, setValues] = useState<ParamValue[]>(model.paramValues);
+
+  const getChangeValue = (id: number, e: any) => {
+
+    const prevParamValues = values;
+    const targetIndex = prevParamValues.findIndex((item) => item.paramId === id);
+    
+    if(targetIndex === -1) {
+      return prevParamValues;
+    }
+
+    const copyParamValues = [...values];
+    copyParamValues[targetIndex] = {
+      ...copyParamValues[targetIndex],
+      value: e.target.value
+    }
+    setValues(copyParamValues);
+  };
+
+  return <ParamEditor params={params} values={values} getChangeValue={getChangeValue}/>;
 };
 
-const ParamEditor: React.FC<Props> = ({ params, model }) => {
+// Компонент ParamEditor создаёт функцию getModel, кторая содержит все проставленные значения параметров
+const ParamEditor: React.FC<Props> = ({ params, getChangeValue, values }) => {
 
-  const [value, setValue] = useState<ParamValue[]>([]);
+  const getModel = (): Model  => {
+   return {
+    paramValues: values,
+  }
+  }
 
-  const getChangeValue = (paramId: number, e: any) => {
-    setValue(model.paramValues.map((item) => {
-      if(item.paramId !== paramId) return item;
-
-      return {
-        ...item,
-        value: e.target.value
-      }
-    }))
-  };
-  console.log(value);
+  useEffect(() => {
+    getModel();
+  }, [values]);
 
   return (
     <>
       <div style={{ display: "flex" }}>
         <Params params={params}/>
-        <Values model={model} getChangeValue={getChangeValue} value={value}/>
+        <Values getChangeValue={getChangeValue} values={values}/>
       </div>
     </>
   );
 };
 
+// Компонент Params выводит на экран все параметры
 const Params: React.FC<PropsParams> = ({params}) => {
   
   return <div
@@ -103,16 +114,15 @@ const Params: React.FC<PropsParams> = ({params}) => {
 </div>
 }
 
-const Values: React.FC<PropsValues>= (props) => {
-
-  const {model, getChangeValue, value} = props;
+// Компонент Values выводит на экран все значения параметров
+const Values: React.FC<PropsValues>= ({getChangeValue, values}) => {
 
   return <div style={{ display: "flex", flexDirection: "column" }}>
-  {model.paramValues.map((i) => (
+  {values.map((i) => (
     <input
       key={i.paramId}
       type="text"
-      value={value}
+      value={i.value}
       placeholder={i.value}
       onChange={(e) => getChangeValue(i.paramId, e)}
       style={{ border: "1px solid #cac7c7" }}
